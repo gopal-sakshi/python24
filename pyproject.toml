@@ -1,0 +1,25 @@
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[project]
+name = "tech-chatbot23"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "langgraph",
+    "pymongo",
+    "mcp",
+    "sentence-transformers",
+    # Force the CPU version of torch
+    "torch",
+    "grpcio-tools>=1.80.0",
+    "grpcio>=1.80.0",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[tool.uv]
+package = false

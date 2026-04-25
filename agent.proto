@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package agent;
+
+service AgentService {
+  rpc CallTool (ToolRequest) returns (ToolResponse);
+}
+
+message ToolRequest {
+  string tool_name = 1;
+  string arguments = 2;
+}
+
+message ToolResponse {
+  string result = 1;
+}
