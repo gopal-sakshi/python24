@@ -2,10 +2,9 @@ from typing import Annotated, TypedDict, Literal
 from langgraph.graph import StateGraph, START, END
 import sys
 import os
-# 1. Get the path to the 'schema' folder
-schema_path = os.path.join(os.path.dirname(__file__), 'schema')
 
-# 2. Add it to Python's search list
+# 1. Get the path to the 'schema' folder and Add it to Python's search list
+schema_path = os.path.join(os.path.dirname(__file__), 'schema')
 if schema_path not in sys.path:
     sys.path.append(schema_path)
 
@@ -20,19 +19,23 @@ class AgentState(TypedDict):
     response: str
     source: str # To track if we used MCP or MongoDB
 
-# --- Node 1: MongoDB Search ---
+# ************************************************************************************* #
+
+# Node 01: MongoDB Search; do vectorSearch and get similar documents ---
 def retrieve_node(state: AgentState):
     print("--- LOG: Accessing MongoDB Knowledge Base ---")
     return {"retrieved_info": "Manual: Reset the breaker by flipping switch A1.", "source": "MongoDB"}
 
-# --- Node 2: MCP Tool (Mocked) ---
+# ************************************************************************************* #
+
+
+
 # def mcp_tool_node(state: AgentState):
-#     print("--- LOG: Accessing MCP Tool (Live Telemetry) ---")
-#     # This mocks a real MCP call to a technician tool
+#     print("--- LOG: Accessing MCP Tool ---")
 #     return {"retrieved_info": "Sensor Data: Voltage is 220V, Status: NOMINAL", "source": "MCP Tool"}
 
+# Node 02: MCP Tool (invoking an actual MCP server);        see mock MCP tool; if you dont have MCP server
 def mcp_tool_node(state: AgentState):
-    # This is the "Who is calling it" part!
     channel = grpc.insecure_channel('localhost:50051')
     stub = agent_pb2_grpc.AgentServiceStub(channel)
     
@@ -63,7 +66,7 @@ builder.add_node("search", retrieve_node)
 builder.add_node("mcp_tools", mcp_tool_node)
 builder.add_node("generate", mock_llm_node)
 
-# LOGIC: Start -> Router -> (either search OR mcp_tools) -> generate
+# LOGIC: Start -> Router -> (either search OR mcp_tools) -> generateZ
 builder.add_conditional_edges(
     START, 
     router, 
